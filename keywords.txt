@@ -1,0 +1,37 @@
+#######################################
+# Syntax Coloring Map For GPIOKey
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+GPIOKeyStates_t	KEYWORD1
+GPIOKey	KEYWORD1
+GPIOKeyCallback_t	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+__stringify_1	KEYWORD2
+__stringify	KEYWORD2
+ISR_KeyPressedChangedHandler	KEYWORD2
+enableAsynch	KEYWORD2
+Check	KEYWORD2
+State	KEYWORD2
+pressed	KEYWORD2
+getArg	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+GPIOKEYNOCHANGE	LITERAL1
+GPIOKEYPRESSED	LITERAL1
+GPIOKEYRELEASED	LITERAL1
+
+GPIOKEY_VERSION	LITERAL1
+GPIOKEY_VERSION_MAJOR	LITERAL1
+GPIOKEY_VERSION_MINOR	LITERAL1
+CONFIG_GPIOKEY_USES_ASYNCH_CALLBACKS	LITERAL1
