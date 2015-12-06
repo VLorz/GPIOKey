@@ -61,18 +61,23 @@ typedef void (*GPIOKeyCallback_t)( GPIOKey* lpKey, GPIOKeyStates_t NewState );
 class GPIOKey
 {
   public:
-    GPIOKey( uint8_t arduinoPin );
+    GPIOKey( uint8_t arduinoPin, uint8_t keyCode );
+	GPIOKey( uint8_t arduinoPin );
 #if (CONFIG_GPIOKEY_USES_ASYNCH_CALLBACKS >= 1)
     GPIOKey( uint8_t arduinoPin, GPIOKeyCallback_t callback );
+	GPIOKey( uint8_t arduinoPin, uint8_t keyCode, GPIOKeyCallback_t callback );
     void enableAsynch( GPIOKeyCallback_t callback );
 #endif  /* mCONFIG_KEY_USES_ASYNCH_CALLBACKS */
 
     GPIOKeyStates_t Check();
     GPIOKeyStates_t State();
     bool pressed() { return ( State() == GPIOKEYPRESSED ); };
+    bool released() { return ( State() == GPIOKEYRELEASED ); };
+	uint8_t keyCode() { return m_keyCode; };
 
   private:
-    uint8_t m_Input;
+	uint8_t m_keyCode;
+    uint8_t m_arduinoPin;
     GPIOKeyStates_t  m_PreviousState;
 #if (CONFIG_GPIOKEY_USES_ASYNCH_CALLBACKS >= 1)
     GPIOKeyCallback_t m_callback;

@@ -10,55 +10,59 @@
 #endif  /* mCONFIG_KEY_USES_ASYNCH_CALLBACKS */
 
 
-GPIOKey::GPIOKey( uint8_t Input  )
-  : m_Input( Input ), m_callback( NULL )
+GPIOKey::GPIOKey( uint8_t arduinoPin, uint8_t keyCode )
+	: m_arduinoPin( arduinoPin ), m_keyCode( keyCode )
 {
-  pinMode( Input, INPUT );
-  digitalWrite( Input, HIGH );      // Activate pull-up;
+  pinMode( arduinoPin, INPUT_PULLUP );
+  digitalWrite( arduinoPin, HIGH );      // Activate pull-up;
   
   m_PreviousState = State();
 }
 
+GPIOKey::GPIOKey( uint8_t arduinoPin  )
+  : GPIOKey( arduinoPin, (uint8_t)0 )
+{}
 
+
+#if (CONFIG_GPIOKEY_USES_ASYNCH_CALLBACKS >= 1)
 void ISR_KeyPressedChangedHandler( void* tag )
 {
   GPIOKey* lpKey = (GPIOKey*)tag;
-  //, GPIOKeyStates_t NewState
   lpKey->m_callback( lpKey, GPIOKEYNOCHANGE );
 }
 
 
-GPIOKey::GPIOKey( uint8_t Input, GPIOKeyCallback_t callback )
-  : m_Input( Input ), m_callback( callback )
+GPIOKey::GPIOKey( uint8_t arduinoPin, uint8_t keyCode, GPIOKeyCallback_t callback )
+	: GPIOKey( arduinoPin, keyCode )
 {
-  pinMode( Input, INPUT );
-  digitalWrite( Input, HIGH );      // Activate pull-up;
-  
-  m_PreviousState = State();
-  
-  if (callback) {
-    PCintPort::attachInterrupt( Input, ISR_KeyPressedChangedHandler, CHANGE, this );
-  }
+	m_callback = NULL;
+	enableAsynch( callback );
 }
+
+
+GPIOKey::GPIOKey( uint8_t arduinoPin, GPIOKeyCallback_t callback )
+  : GPIOKey( arduinoPin, 0, callback )
+{}
 
 
 void GPIOKey::enableAsynch( GPIOKeyCallback_t callback )
 {
   if (m_callback) {
-    PCintPort::detachInterrupt( m_Input );
+    PCintPort::detachInterrupt( m_arduinoPin );
     m_callback = NULL;
   }
   
   if (callback) {
     m_callback = callback;
-    PCintPort::attachInterrupt( m_Input, ISR_KeyPressedChangedHandler, CHANGE, this );
+    PCintPort::attachInterrupt( m_arduinoPin, ISR_KeyPressedChangedHandler, CHANGE, this );
   }
 }
+#endif  /* mCONFIG_KEY_USES_ASYNCH_CALLBACKS */
 
 
 GPIOKeyStates_t GPIOKey::State()
 {
-  return digitalRead( m_Input ) ? GPIOKEYRELEASED : GPIOKEYPRESSED;
+  return digitalRead( m_arduinoPin ) ? GPIOKEYRELEASED : GPIOKEYPRESSED;
 }
 
 

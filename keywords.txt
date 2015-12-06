@@ -21,6 +21,8 @@ enableAsynch	KEYWORD2
 Check	KEYWORD2
 State	KEYWORD2
 pressed	KEYWORD2
+released	KEYWORD2
+keyCode	KEYWORD2
 getArg	KEYWORD2
 
 #######################################
