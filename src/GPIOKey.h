@@ -50,6 +50,7 @@ typedef enum {
 } GPIOKeyStates_t;
 
 
+#define	KEY_DEBOUNCE_TIME	20
 
 #if (CONFIG_GPIOKEY_USES_ASYNCH_CALLBACKS >= 1)
 void ISR_KeyPressedChangedHandler( void* tag );
@@ -74,11 +75,12 @@ class GPIOKey
     bool pressed() { return ( State() == GPIOKEYPRESSED ); };
     bool released() { return ( State() == GPIOKEYRELEASED ); };
 	uint8_t keyCode() { return m_keyCode; };
-
+	unsigned long keyPressDuration() { return millis() - m_TimeAtPreviousPress; };
   private:
 	uint8_t m_keyCode;
     uint8_t m_arduinoPin;
     GPIOKeyStates_t  m_PreviousState;
+	unsigned long m_TimeAtPreviousPress;
 #if (CONFIG_GPIOKEY_USES_ASYNCH_CALLBACKS >= 1)
     GPIOKeyCallback_t m_callback;
     friend void ISR_KeyPressedChangedHandler( void* tag );

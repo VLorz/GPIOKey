@@ -11,13 +11,14 @@
 
 
 GPIOKey::GPIOKey( uint8_t arduinoPin, uint8_t keyCode )
-	: m_arduinoPin( arduinoPin ), m_keyCode( keyCode )
+	: m_arduinoPin( arduinoPin ), m_keyCode( keyCode ), m_TimeAtPreviousPress( 0 )
 {
   pinMode( arduinoPin, INPUT_PULLUP );
   digitalWrite( arduinoPin, HIGH );      // Activate pull-up;
   
   m_PreviousState = State();
 }
+
 
 GPIOKey::GPIOKey( uint8_t arduinoPin  )
   : GPIOKey( arduinoPin, (uint8_t)0 )
@@ -28,7 +29,8 @@ GPIOKey::GPIOKey( uint8_t arduinoPin  )
 void ISR_KeyPressedChangedHandler( void* tag )
 {
   GPIOKey* lpKey = (GPIOKey*)tag;
-  lpKey->m_callback( lpKey, GPIOKEYNOCHANGE );
+  lpKey->m_TimeAtPreviousPress = millis();
+  lpKey->m_callback( lpKey, lpKey->Check() );
 }
 
 
@@ -72,7 +74,10 @@ GPIOKeyStates_t GPIOKey::Check()
   
   if (State == m_PreviousState)
     return GPIOKEYNOCHANGE;
-    
+  
+  if (State == GPIOKEYPRESSED)
+    m_TimeAtPreviousPress = millis();
+  
   return (m_PreviousState = State);
 }
 
